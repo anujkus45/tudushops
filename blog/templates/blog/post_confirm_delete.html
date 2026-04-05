@@ -1,0 +1,52 @@
+{% extends 'blog/base.html' %}
+{% block title %}Delete Post — TuduShops{% endblock %}
+
+{% block content %}
+<main class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <div class="text-center mb-8">
+        <div class="w-20 h-20 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+            <i class="ph ph-trash-simple text-4xl text-red-400"></i>
+        </div>
+        <h1 class="text-3xl font-extrabold text-slate-900 mb-3">Delete Post?</h1>
+        <p class="text-slate-500 text-base leading-relaxed">
+            You're about to permanently delete<br>
+            <strong class="text-slate-800">"{{ post.title }}"</strong><br>
+            This action <span class="text-red-500 font-semibold">cannot be undone</span>.
+        </p>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <!-- Post Preview -->
+        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200 mb-6">
+            {% if post.image %}
+            <img src="{{ post.image.url }}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0" alt="{{ post.title }}">
+            {% else %}
+            <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-brand-400 to-teal-700 flex items-center justify-center flex-shrink-0">
+                <span class="text-white font-bold text-2xl">{{ post.title|first|upper }}</span>
+            </div>
+            {% endif %}
+            <div class="flex-1 min-w-0">
+                <p class="font-bold text-slate-800 truncate">{{ post.title }}</p>
+                <p class="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5">
+                    <i class="ph ph-user"></i> {{ post.author.username }}
+                    <span class="text-slate-300">·</span>
+                    <i class="ph ph-calendar"></i> {{ post.created_at|date:"M d, Y" }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="flex gap-3">
+                <button type="submit" class="flex-1 inline-flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-3 rounded-full transition-colors shadow-lg shadow-red-500/25 text-sm">
+                    <i class="ph ph-trash"></i> Yes, Delete It
+                </button>
+                <a href="{% url 'post-detail' post.slug %}" class="flex-1 inline-flex items-center justify-center gap-2 border border-slate-200 text-slate-600 font-semibold px-6 py-3 rounded-full hover:bg-slate-50 hover:border-slate-300 transition-colors text-sm">
+                    <i class="ph ph-x"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}

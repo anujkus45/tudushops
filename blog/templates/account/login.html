@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — TuduShops</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary:   #0c0f17;
+            --bg-card:      #1a1f2e;
+            --accent:       #6c63ff;
+            --accent-glow:  rgba(108, 99, 255, 0.35);
+            --accent-2:     #ff6584;
+            --text-primary: #e8eaf6;
+            --text-secondary:#8b95b0;
+            --border:       rgba(255,255,255,0.08);
+            --radius:       18px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Animated Background ── */
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            animation: floatOrb 8s ease-in-out infinite;
+        }
+        .bg-orb-1 {
+            width: 500px; height: 500px;
+            background: rgba(108, 99, 255, 0.12);
+            top: -150px; left: -100px;
+            animation-delay: 0s;
+        }
+        .bg-orb-2 {
+            width: 400px; height: 400px;
+            background: rgba(255, 101, 132, 0.08);
+            bottom: -100px; right: -80px;
+            animation-delay: 3s;
+        }
+        .bg-orb-3 {
+            width: 300px; height: 300px;
+            background: rgba(108, 99, 255, 0.07);
+            top: 50%; left: 60%;
+            animation-delay: 5s;
+        }
+        @keyframes floatOrb {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50%       { transform: translateY(-30px) scale(1.05); }
+        }
+
+        /* ── Grid Overlay ── */
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(108,99,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(108,99,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        /* ── Main Card ── */
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 440px;
+            padding: 1.5rem;
+            animation: cardEntrance 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ── Logo / Brand ── */
+        .brand {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, var(--accent), #8b80ff);
+            border-radius: 16px;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 30px var(--accent-glow);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 8px 30px var(--accent-glow); }
+            50%       { box-shadow: 0 8px 50px rgba(108,99,255,0.55); }
+        }
+        .brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #a89fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        .brand-tagline {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            letter-spacing: 0.03em;
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(108,99,255,0.5), transparent);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.4rem;
+            color: var(--text-primary);
+        }
+        .card-subtitle {
+            text-align: center;
+            font-size: 0.87rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* ── Divider ── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.75rem 0;
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── Google Button ── */
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: 100%;
+            padding: 0.85rem 1.5rem;
+            background: #fff;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-google::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0);
+            transition: background 0.2s;
+        }
+        .btn-google:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+        }
+        .btn-google:hover::after { background: rgba(0,0,0,0.04); }
+        .btn-google:active { transform: translateY(0); }
+
+        .google-icon {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+
+        /* ── Features List ── */
+        .features {
+            display: flex;
+            flex-direction: column;
+            gap: 0.65rem;
+            margin-top: 2rem;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+        .feature-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(108,99,255,0.12);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            border: 1px solid rgba(108,99,255,0.2);
+        }
+
+        /* ── Back Link ── */
+        .back-link {
+            text-align: center;
+            margin-top: 1.75rem;
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+        }
+        .back-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .back-link a:hover { color: #a89fff; }
+
+        /* ── Footer Note ── */
+        .privacy-note {
+            text-align: center;
+            margin-top: 1.25rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            opacity: 0.7;
+            line-height: 1.5;
+        }
+        .privacy-note a { color: var(--accent); text-decoration: none; }
+
+        /* ── Messages ── */
+        .alert {
+            background: rgba(248,113,113,0.1);
+            border: 1px solid rgba(248,113,113,0.3);
+            color: #fca5a5;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 480px) {
+            .card { padding: 1.75rem 1.5rem; }
+            .brand-name { font-size: 1.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animated background -->
+    <div class="bg-grid"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+
+    <div class="login-wrapper">
+
+        <!-- Brand -->
+        <div class="brand">
+            <div class="brand-logo">✍️</div>
+            <span class="brand-name">TuduShops</span>
+            <p class="brand-tagline">Where great stories come to life</p>
+        </div>
+
+        <!-- Card -->
+        <div class="card">
+            <h1 class="card-title">Welcome back</h1>
+            <p class="card-subtitle">
+                Sign in to read, write, and connect<br>with a community of writers.
+            </p>
+
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Google OAuth Button -->
+            <a href="{% url 'google_login' %}" class="btn-google" id="google-login-btn">
+                <svg class="google-icon" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Continue with Google
+            </a>
+
+            <div class="divider">or</div>
+
+            <!-- Features -->
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">📝</div>
+                    <span>Write and publish your own blog posts</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💬</div>
+                    <span>Comment and engage with other writers</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <span>Secure sign-in — no password needed</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back link -->
+        <div class="back-link">
+            <a href="{% url 'post-list' %}">← Back to TuduShops</a>
+        </div>
+
+        <!-- Privacy note -->
+        <p class="privacy-note">
+            By signing in, you agree to our terms of service.<br>
+            No spam, ever. Your data stays private.
+        </p>
+
+    </div>
+
+</body>
+</html>

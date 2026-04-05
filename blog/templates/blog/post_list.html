@@ -1,0 +1,172 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}
+    {% if category %}{{ category.name }} — TuduShops
+    {% elif request.GET.q %}Search: "{{ request.GET.q }}" — TuduShops
+    {% else %}TuduShops — Modern Blog{% endif %}
+{% endblock %}
+
+{% block content %}
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    {% if not request.GET.q and not category and posts %}
+    <!-- ── HERO FEATURED POST ── -->
+    {% with hero=posts.0 %}
+    <a href="{% url 'post-detail' hero.slug %}" class="block mb-20">
+        <article class="relative bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden flex flex-col lg:flex-row group cursor-pointer hover:shadow-xl transition-shadow duration-500">
+            {% if hero.image %}
+            <div class="lg:w-3/5 image-zoom">
+                <img class="w-full h-[400px] lg:h-[500px] object-cover" src="{{ hero.image.url }}" alt="{{ hero.title }}">
+            </div>
+            {% else %}
+            <div class="lg:w-3/5 h-[300px] lg:h-[500px] bg-gradient-to-br from-brand-500 to-teal-700 flex items-center justify-center">
+                <span class="text-white/30 text-9xl font-extrabold select-none">{{ hero.title|first|upper }}</span>
+            </div>
+            {% endif %}
+            <div class="lg:w-2/5 p-8 lg:p-12 flex flex-col justify-center">
+                <div class="flex items-center gap-3 mb-4">
+                    {% for cat in hero.categories.all|slice:":1" %}
+                    <span class="px-3 py-1 bg-brand-50 text-brand-600 text-sm font-bold rounded-full">{{ cat.name }}</span>
+                    {% empty %}
+                    <span class="px-3 py-1 bg-brand-50 text-brand-600 text-sm font-bold rounded-full">Featured</span>
+                    {% endfor %}
+                    <span class="text-slate-400 text-sm font-medium"><i class="ph ph-calendar mr-1"></i>{{ hero.created_at|date:"M d, Y" }}</span>
+                </div>
+                <h1 class="text-3xl lg:text-4xl font-extrabold text-slate-900 leading-tight mb-4 group-hover:text-brand-600 transition-colors">
+                    {{ hero.title }}
+                </h1>
+                <p class="text-slate-500 text-lg mb-8 line-clamp-3">
+                    {{ hero.content|truncatewords:30 }}
+                </p>
+                <div class="flex items-center justify-between mt-auto">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-brand-100 flex items-center justify-center font-bold text-brand-600 text-sm">
+                            {{ hero.author.username|first|upper }}
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-900">{{ hero.author.username }}</p>
+                            <p class="text-xs text-slate-400">{{ hero.created_at|date:"F d, Y" }}</p>
+                        </div>
+                    </div>
+                    <div class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-brand-500 group-hover:text-white group-hover:border-brand-500 transition-all text-slate-400">
+                        <i class="ph ph-arrow-up-right text-lg"></i>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </a>
+    {% endwith %}
+    {% endif %}
+
+    <!-- ── SECTION HEADER ── -->
+    <div class="flex justify-between items-end mb-8">
+        <div>
+            {% if request.GET.q %}
+                <h2 class="text-3xl font-extrabold text-slate-900">Search Results</h2>
+                <p class="text-slate-500 mt-1">Found {{ posts|length }} result{% if posts|length != 1 %}s{% endif %} for "<strong>{{ request.GET.q }}</strong>"</p>
+            {% elif category %}
+                <h2 class="text-3xl font-extrabold text-slate-900">{{ category.name }}</h2>
+                <p class="text-slate-500 mt-1">All posts in this category.</p>
+            {% else %}
+                <h2 class="text-3xl font-extrabold text-slate-900">Latest Articles</h2>
+                <p class="text-slate-500 mt-1">Discover our newest thoughts and insights.</p>
+            {% endif %}
+        </div>
+        {% if user.is_authenticated %}
+        <a href="{% url 'post-create' %}" class="hidden sm:flex items-center gap-1.5 text-brand-600 font-bold hover:text-brand-700 transition-colors group text-sm">
+            <i class="ph ph-plus-circle text-lg"></i> Write a post <i class="ph ph-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- ── POSTS GRID ── -->
+    {% if posts %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for post in posts %}
+            {% if not forloop.first or request.GET.q or category %}
+            <a href="{% url 'post-detail' post.slug %}">
+                <article class="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col h-full hover:-translate-y-1">
+                    <!-- Image -->
+                    {% if post.image %}
+                    <div class="relative h-52 image-zoom">
+                        <img class="w-full h-full object-cover" src="{{ post.image.url }}" alt="{{ post.title }}">
+                        <div class="absolute top-3 left-3">
+                            {% for cat in post.categories.all|slice:":1" %}
+                            <span class="px-2.5 py-1 bg-white/90 backdrop-blur text-slate-800 text-xs font-bold rounded-full shadow-sm">{{ cat.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="relative h-52 bg-gradient-to-br from-brand-400 to-teal-700 flex items-center justify-center">
+                        <span class="text-white/20 text-8xl font-extrabold select-none">{{ post.title|first|upper }}</span>
+                        <div class="absolute top-3 left-3">
+                            {% for cat in post.categories.all|slice:":1" %}
+                            <span class="px-2.5 py-1 bg-white/20 backdrop-blur text-white text-xs font-bold rounded-full">{{ cat.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Content -->
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-brand-600 transition-colors line-clamp-2 leading-snug">{{ post.title }}</h3>
+                        <p class="text-slate-500 text-sm mb-5 line-clamp-2 flex-grow leading-relaxed">{{ post.content|truncatewords:20 }}</p>
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                            <div class="flex items-center gap-2">
+                                <div class="w-6 h-6 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 text-xs font-bold">{{ post.author.username|first|upper }}</div>
+                                <span class="text-xs font-medium text-slate-400">{{ post.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <span class="text-xs font-bold text-brand-600 flex items-center gap-0.5">Read More <i class="ph ph-caret-right"></i></span>
+                        </div>
+                    </div>
+                </article>
+            </a>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- ── PAGINATION ── -->
+        {% if is_paginated %}
+        <div class="flex items-center justify-center gap-3 mt-16">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="flex items-center gap-1.5 px-5 py-2.5 rounded-full border border-slate-200 text-slate-600 text-sm font-semibold hover:border-brand-500 hover:text-brand-600 transition-all bg-white shadow-sm">
+                <i class="ph ph-arrow-left"></i> Previous
+            </a>
+            {% endif %}
+            <span class="px-5 py-2.5 bg-white rounded-full border border-slate-200 text-sm font-semibold text-slate-700 shadow-sm">
+                {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            </span>
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="flex items-center gap-1.5 px-5 py-2.5 rounded-full border border-slate-200 text-slate-600 text-sm font-semibold hover:border-brand-500 hover:text-brand-600 transition-all bg-white shadow-sm">
+                Next <i class="ph ph-arrow-right"></i>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-24">
+            <div class="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i class="ph ph-newspaper text-4xl text-slate-300"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-700 mb-2">No posts found</h3>
+            <p class="text-slate-400 mb-8">
+                {% if request.GET.q %}Try a different search term.
+                {% elif category %}No published posts in this category yet.
+                {% else %}Be the first to write a story!{% endif %}
+            </p>
+            {% if user.is_authenticated %}
+            <a href="{% url 'post-create' %}" class="inline-flex items-center gap-2 bg-brand-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-brand-600 transition-colors shadow-lg shadow-brand-500/30">
+                <i class="ph ph-plus"></i> Write the first post
+            </a>
+            {% else %}
+            <a href="{% url 'account_login' %}" class="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-full font-semibold hover:bg-brand-500 transition-colors shadow-lg">
+                Sign In to Write
+            </a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+</main>
+{% endblock %}

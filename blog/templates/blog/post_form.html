@@ -1,0 +1,95 @@
+{% extends 'blog/base.html' %}
+{% block title %}{% if form.instance.pk %}Edit Post{% else %}Create New Post{% endif %} — TuduShops{% endblock %}
+
+{% block content %}
+<main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <!-- Back -->
+    <a href="{% url 'post-list' %}" class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-brand-600 transition-colors mb-8 group">
+        <i class="ph ph-arrow-left group-hover:-translate-x-1 transition-transform"></i> Back to posts
+    </a>
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-4xl font-extrabold text-slate-900 mb-2">
+            {% if form.instance.pk %}Edit Your Post{% else %}Write a New Post{% endif %}
+        </h1>
+        <p class="text-slate-500">{% if form.instance.pk %}Update and refine your story.{% else %}Share your thoughts, ideas, and stories with the world.{% endif %}</p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-8">
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+
+            <!-- Title -->
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Post Title <span class="text-red-400">*</span></label>
+                <input type="text" name="title" value="{{ form.title.value|default:'' }}"
+                    placeholder="Enter an engaging title..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm font-medium transition-all"
+                    required>
+                {% if form.title.errors %}<p class="text-red-500 text-xs mt-1">{{ form.title.errors|join:", " }}</p>{% endif %}
+            </div>
+
+            <!-- Content -->
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Content <span class="text-red-400">*</span></label>
+                <textarea name="content" rows="12" placeholder="Write your story here..."
+                    class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 text-sm leading-relaxed resize-none transition-all"
+                    required>{{ form.content.value|default:'' }}</textarea>
+                {% if form.content.errors %}<p class="text-red-500 text-xs mt-1">{{ form.content.errors|join:", " }}</p>{% endif %}
+            </div>
+
+            <!-- Image -->
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Cover Image <span class="text-slate-400 font-normal">(optional)</span></label>
+                <div class="relative">
+                    <input type="file" name="image" accept="image/*"
+                        class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100 file:cursor-pointer cursor-pointer">
+                </div>
+                {% if form.instance.image %}<p class="text-xs text-slate-400 mt-1">Current: {{ form.instance.image }}</p>{% endif %}
+            </div>
+
+            <!-- Categories -->
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Categories</label>
+                <div class="flex flex-wrap gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    {% for choice in form.categories %}
+                    <label class="flex items-center gap-2 cursor-pointer group">
+                        {{ choice.tag }}
+                        <span class="text-sm text-slate-600 group-hover:text-brand-600 transition-colors font-medium select-none">{{ choice.choice_label }}</span>
+                    </label>
+                    {% empty %}
+                    <p class="text-sm text-slate-400">No categories available. <a href="/admin/blog/category/add/" class="text-brand-500 font-semibold hover:text-brand-600">Add one →</a></p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Publish Toggle -->
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <div>
+                    <p class="text-sm font-bold text-slate-700">Publish Post</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Make this post visible to everyone</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" name="is_published" {% if form.is_published.value %}checked{% endif %} class="sr-only peer">
+                    <div class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-brand-500 peer-focus:ring-2 peer-focus:ring-brand-500/30 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+                </label>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3 pt-2">
+                <button type="submit" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-bold px-8 py-3 rounded-full transition-colors shadow-lg shadow-brand-500/30 text-sm">
+                    <i class="ph ph-paper-plane-right text-base"></i>
+                    {% if form.instance.pk %}Save Changes{% else %}Publish Post{% endif %}
+                </button>
+                <a href="{% url 'post-list' %}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-slate-200 text-slate-600 font-semibold text-sm hover:border-slate-300 hover:bg-slate-50 transition-colors">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+</main>
+{% endblock %}
