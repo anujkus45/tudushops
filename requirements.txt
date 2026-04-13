@@ -10,3 +10,4 @@ oauthlib==3.3.1
 requests==2.33.1
 cloudinary==1.42.0
 django-cloudinary-storage==0.3.0
+PyJWT[crypto]>=2.0
